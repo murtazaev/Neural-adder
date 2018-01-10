@@ -1,7 +1,7 @@
 package com.company;
 
 
-
+import java.util.Random;
 
 public class Main {
 
@@ -20,7 +20,7 @@ public class Main {
     private static double[] outputDataHiddenNeyrons = new double[300];
     private static double[] deltasHiddensNeyrons = new double[300];
 
-
+    static Random random = new Random();
     private static double inputDataOutputNeyron;
     private static double outputDataOutputNeyron;
     private static double deltaOutputNeyron;
@@ -32,7 +32,7 @@ public class Main {
     //MOMENT AND SPEED LEARNING CONST
     private final static double moment = 0.3;
     private final static double epsilon = 0.7;
-    private final static double learnEquals = 0;
+    private static double learnEquals;
 
 
     public static void main(String[] args) {
@@ -40,38 +40,49 @@ public class Main {
         for (int i = 0; i < sinapsWeightOne.length; i++)
             sinapsWeightOne[i] = Math.random();
 
-        for (int i = 0; i < inputDataHiddenNeyrons.length; i++)
-            inputDataHiddenNeyrons[i] = mutpleSum(i + 1);
+        for (int q = 0; q < 1000; q++) {
 
-        for (int i = 0; i < outputDataHiddenNeyrons.length; i++)
-            outputDataHiddenNeyrons[i] = functionSygmoid(inputDataHiddenNeyrons[i]);
+            inputNeurons[0][0] = random.nextInt(1000000);
+            inputNeurons[1][0] = random.nextInt(1000000);
+            learnEquals = inputNeurons[0][0] + inputNeurons[1][0];
 
-        inputDataOutputNeyron = mutpleSum();
-        outputDataOutputNeyron = functionSygmoid(inputDataOutputNeyron);
+            for (int i = 0; i < inputDataHiddenNeyrons.length; i++)
+                inputDataHiddenNeyrons[i] = mutpleSum(i + 1);
 
-        deltaOutputNeyron = deltaOutputNeyron(outputDataOutputNeyron, learnEquals);
+            for (int i = 0; i < outputDataHiddenNeyrons.length; i++)
+                outputDataHiddenNeyrons[i] = functionSygmoid(inputDataHiddenNeyrons[i]);
 
-        for (int i = 0; i < deltasHiddensNeyrons.length; i++)
-            deltasHiddensNeyrons[i] = deltasHiddensNeyrons(sinapsWeightTwo[i], deltaOutputNeyron, outputDataHiddenNeyrons[i]);
+            inputDataOutputNeyron = mutpleSum();
+            outputDataOutputNeyron = functionSygmoid(inputDataOutputNeyron);
 
-        for (int i = 0; i < GRADweightTwo.length; i++)
-            GRADweightTwo[i] = gradientSinaps(deltaOutputNeyron, outputDataHiddenNeyrons[i]);
+            deltaOutputNeyron = deltaOutputNeyron(outputDataOutputNeyron, learnEquals);
 
-        for (int i = 0; i < GRADweightOne.length; i++)
-            GRADweightOne[i] = gradientSinaps(deltasHiddensNeyrons[i], i);
+            for (int i = 0; i < deltasHiddensNeyrons.length; i++)
+                deltasHiddensNeyrons[i] = deltasHiddensNeyrons(sinapsWeightTwo[i], deltaOutputNeyron, outputDataHiddenNeyrons[i]);
 
-        for (int i = 0; i < deltasSinapsTwo.length; i++)
+            for (int i = 0; i < GRADweightTwo.length; i++)
+                GRADweightTwo[i] = gradientSinaps(deltaOutputNeyron, outputDataHiddenNeyrons[i]);
+
+            //при циклах выходмт за пределы массива deltasHiddensNeyrons, ииза этого программа вылетает
+            for (int i = 0; i < GRADweightOne.length; i++)
+                GRADweightOne[i] = gradientSinaps(deltasHiddensNeyrons[i], i);
+
+            for (int i = 0; i < deltasSinapsTwo.length; i++)
                 deltasSinapsTwo[i] = deltasSinaps(moment, epsilon, deltasSinapsTwo[i], GRADweightTwo[i]);
 
-        for (int i = 0; i < deltasSinapsOne.length; i++)
-            deltasSinapsOne[i] = deltasSinaps(moment, epsilon, deltasSinapsOne[i], GRADweightTwo[i]);
+            for (int i = 0; i < deltasSinapsOne.length; i++)
+                deltasSinapsOne[i] = deltasSinaps(moment, epsilon, deltasSinapsOne[i], GRADweightTwo[i]);
 
-        for (int i = 0; i < sinapsWeightTwo.length; i++)
-            sinapsWeightTwo[i] = summDeltaWSimpleW(sinapsWeightTwo[i], deltasSinapsTwo[i]);
+            for (int i = 0; i < sinapsWeightTwo.length; i++)
+                sinapsWeightTwo[i] = summDeltaWSimpleW(sinapsWeightTwo[i], deltasSinapsTwo[i]);
 
-        for (int i = 0; i < sinapsWeightOne.length; i++)
-            sinapsWeightOne[i] = summDeltaWSimpleW(sinapsWeightOne[i], deltasSinapsOne[i]);
+            for (int i = 0; i < sinapsWeightOne.length; i++)
+                sinapsWeightOne[i] = summDeltaWSimpleW(sinapsWeightOne[i], deltasSinapsOne[i]);
+        }
 
+        System.out.println(inputNeurons[0][0]);
+        System.out.println(inputNeurons[1][0]);
+        System.out.println(outputDataOutputNeyron);
 
     }
 
@@ -111,12 +122,6 @@ public class Main {
         return (learnEquals - outputDataOutputNeyron) * ((1 - outputDataOutputNeyron) * outputDataOutputNeyron);
     }
 
-
-
-
-    /*private static double deltasHiddensNeyrons(double outputDataHiddenNeyron, double deltaOutputNeyron, int i) {
-        return (sinapsWeight[i] * deltaOutputNeyron) * ((1 - outputDataHiddenNeyron) * outputDataHiddenNeyron);
-    }*/
 
     private static double gradientSinaps(double deltaNeyron, double outputNeyron) {
         return deltaNeyron * outputNeyron;
