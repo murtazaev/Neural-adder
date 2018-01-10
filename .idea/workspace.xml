@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="e678750b-bbaf-4887-9803-7936552617da" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/src/com/company/Main.java" afterPath="$PROJECT_DIR$/src/com/company/Main.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -212,7 +211,14 @@
       <option name="project" value="LOCAL" />
       <updated>1515596591397</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Вылетает на 68 строке, изза того, что при цикле, выходит за пределы массива">
+      <created>1515615029801</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1515615029801</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TodoView">
@@ -286,7 +292,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Докончил доконца класс Main, вряд ли будет рабоатать правильно" />
-    <option name="LAST_COMMIT_MESSAGE" value="Докончил доконца класс Main, вряд ли будет рабоатать правильно" />
+    <MESSAGE value="Вылетает на 68 строке, изза того, что при цикле, выходит за пределы массива" />
+    <option name="LAST_COMMIT_MESSAGE" value="Вылетает на 68 строке, изза того, что при цикле, выходит за пределы массива" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
