@@ -5,28 +5,27 @@ import java.util.Random;
 
 public class Main {
 
-
-    private static double[] sinapsWeightOne = new double[30000];
-    private static double[] sinapsWeightTwo = new double[300];
-    //GRADIENTS
-    private static double[] GRADweightOne = new double[30000];
-    private static double[] GRADweightTwo = new double[300];
-    //DELTAS SINAPS
-    private static double[] deltasSinapsOne = new double[30000];
-    private static double[] deltasSinapsTwo = new double[300];
-
+    private static int[][] inputNeurons = new int[2][1];
 
     private static double[] inputDataHiddenNeyrons = new double[300];
     private static double[] outputDataHiddenNeyrons = new double[300];
     private static double[] deltasHiddensNeyrons = new double[300];
 
-    static Random random = new Random();
     private static double inputDataOutputNeyron;
     private static double outputDataOutputNeyron;
     private static double deltaOutputNeyron;
 
+    private static double[] sinapsWeightOne = new double[ inputNeurons.length * inputDataHiddenNeyrons.length ];
+    private static double[] sinapsWeightTwo = new double[ 1 * outputDataHiddenNeyrons.length ];
+    //GRADIENTS
+    private static double[] GRADweightOne = new double[ inputNeurons.length * inputDataHiddenNeyrons.length ];
+    private static double[] GRADweightTwo = new double[ 1 * outputDataHiddenNeyrons.length ];
+    //DELTAS SINAPS
+    private static double[] deltasSinapsOne = new double[ inputNeurons.length * inputDataHiddenNeyrons.length ];
+    private static double[] deltasSinapsTwo = new double[ 1 * outputDataHiddenNeyrons.length ];
 
-    private static int[][] inputNeurons = new int[2][1];
+
+    static Random random = new Random();
 
 
     //MOMENT AND SPEED LEARNING CONST
@@ -40,14 +39,20 @@ public class Main {
         for (int i = 0; i < sinapsWeightOne.length; i++)
             sinapsWeightOne[i] = Math.random();
 
-        for (int q = 0; q < 1000; q++) {
+        for (int i = 0; i < sinapsWeightTwo.length; i++)
+            sinapsWeightTwo[i] = Math.random();
 
-            inputNeurons[0][0] = random.nextInt(1000000);
-            inputNeurons[1][0] = random.nextInt(1000000);
+        for (int q = 0; q < 100; q++) {
+            inputDataOutputNeyron = 0;
+            outputDataOutputNeyron = 0;
+            deltaOutputNeyron = 0;
+
+            inputNeurons[0][0] = random.nextInt(1000);
+            inputNeurons[1][0] = random.nextInt(1000);
             learnEquals = inputNeurons[0][0] + inputNeurons[1][0];
 
             for (int i = 0; i < inputDataHiddenNeyrons.length; i++)
-                inputDataHiddenNeyrons[i] = mutpleSum(i + 1);
+                inputDataHiddenNeyrons[i] = mutpleSum(i);
 
             for (int i = 0; i < outputDataHiddenNeyrons.length; i++)
                 outputDataHiddenNeyrons[i] = functionSygmoid(inputDataHiddenNeyrons[i]);
@@ -60,18 +65,21 @@ public class Main {
             for (int i = 0; i < deltasHiddensNeyrons.length; i++)
                 deltasHiddensNeyrons[i] = deltasHiddensNeyrons(sinapsWeightTwo[i], deltaOutputNeyron, outputDataHiddenNeyrons[i]);
 
-            for (int i = 0; i < GRADweightTwo.length; i++)
+            for (int i = 0; i < outputDataHiddenNeyrons.length; i++)
                 GRADweightTwo[i] = gradientSinaps(deltaOutputNeyron, outputDataHiddenNeyrons[i]);
 
-            //при циклах выходмт за пределы массива deltasHiddensNeyrons, ииза этого программа вылетает
-            for (int i = 0; i < GRADweightOne.length; i++)
-                GRADweightOne[i] = gradientSinaps(deltasHiddensNeyrons[i], i);
-
+            int num = 0;
+            for (int i = 0; i < deltasHiddensNeyrons.length; i++) {
+                GRADweightOne[num] = gradientSinaps(deltasHiddensNeyrons[i], inputNeurons[0][0]);
+                num++;
+                GRADweightOne[num] = gradientSinaps(deltasHiddensNeyrons[i], inputNeurons[1][0]);
+                num++;
+            }
             for (int i = 0; i < deltasSinapsTwo.length; i++)
                 deltasSinapsTwo[i] = deltasSinaps(moment, epsilon, deltasSinapsTwo[i], GRADweightTwo[i]);
 
             for (int i = 0; i < deltasSinapsOne.length; i++)
-                deltasSinapsOne[i] = deltasSinaps(moment, epsilon, deltasSinapsOne[i], GRADweightTwo[i]);
+                deltasSinapsOne[i] = deltasSinaps(moment, epsilon, deltasSinapsOne[i], GRADweightOne[i]);
 
             for (int i = 0; i < sinapsWeightTwo.length; i++)
                 sinapsWeightTwo[i] = summDeltaWSimpleW(sinapsWeightTwo[i], deltasSinapsTwo[i]);
@@ -83,25 +91,26 @@ public class Main {
         System.out.println(inputNeurons[0][0]);
         System.out.println(inputNeurons[1][0]);
         System.out.println(outputDataOutputNeyron);
+        System.out.println();
 
     }
 
 
     private static double functionSygmoid(double inputNeyronData) {
-        return 1 / (1 + Math.exp(-inputNeyronData));
+        return inputNeyronData;//1 / (1 + Math.exp(-inputNeyronData));
     }
 
     private static double mutpleSum(int pos) {
-        double sm = 0;
-        for (int i = 0; i < inputNeurons.length; i++) {
+        return (inputNeurons[0][0]*sinapsWeightOne[pos])+(inputNeurons[1][0]*sinapsWeightOne[pos+1]);
+
+        /* for (int i = 0; i < inputNeurons.length; i++) {
             for (int q = 0; q < inputNeurons[i].length; q++) {
                 for (int w = (pos * 100) - 100; w < pos * 100; w++) {
                     sm = sm + (inputNeurons[i][q] * sinapsWeightOne[w]);
                 }
             }
-        }
+       }*/
 
-        return sm;
     }
 
     private static double mutpleSum() {
@@ -114,12 +123,12 @@ public class Main {
 
 
     private static double deltasHiddensNeyrons(double sinapsWeight, double deltaOutputNeyron, double outputDataHiddenNeyrons) {
-        return (sinapsWeight * deltaOutputNeyron) * ((1 - outputDataHiddenNeyrons) * outputDataHiddenNeyrons);
+        return (sinapsWeight * deltaOutputNeyron);// * ((1 - outputDataHiddenNeyrons) * outputDataHiddenNeyrons);
     }
 
 
     private static double deltaOutputNeyron(double outputDataOutputNeyron, double learnEquals) {
-        return (learnEquals - outputDataOutputNeyron) * ((1 - outputDataOutputNeyron) * outputDataOutputNeyron);
+        return (learnEquals - outputDataOutputNeyron);// * ((1 - outputDataOutputNeyron) * outputDataOutputNeyron);
     }
 
 
